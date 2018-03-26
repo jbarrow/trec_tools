@@ -25,9 +25,9 @@ class TrecTopics:
 
         """
         # TODO: throw an exception for errors when reading the topics.
-	soup = BeautifulSoup(codecs.open(filename, "r"), "lxml")
+        soup = BeautifulSoup(codecs.open(filename, "r"), "lxml")
 
-	for topic in soup.findAll(topic_tag):
+        for topic in soup.findAll(topic_tag):
             if number_attr:
                 topic_id = topic.get(numberid_tag)
             else:
@@ -35,7 +35,7 @@ class TrecTopics:
 
             query = topic.findNext(querytext_tag).getText()
             if debug:
-                print "Number: %s Query: %s" % (topic_id, query)
+                print("Number: %s Query: %s" % (topic_id, query))
             self.topics[topic_id] = query
 
     def set_topics(self, topics):
@@ -46,7 +46,7 @@ class TrecTopics:
 
     def clean_topics(self):
         result = {}
-        for topid, text in self.topics.iteritems():
+        for topid, text in self.topics.items():
             cleaned_text = remove_punctuation(text)
             result[topid] = cleaned_text
         self.topics = result
@@ -63,12 +63,12 @@ class TrecTopics:
 
         self.outputfile = os.path.join(outputdir, filename)
         if debug == True:
-            print "Writing topics to %s" % (self.outputfile)
+            print("Writing topics to %s" % (self.outputfile))
 
         if fileformat == "terrier":
             # Creates file object
             root = etree.Element('topics')
-            for qid, text in sorted(self.topics.iteritems(), key=lambda x:x[0]):
+            for qid, text in sorted(iter(self.topics.items()), key=lambda x:x[0]):
                 topic = etree.SubElement(root, 'top')
                 tid = etree.SubElement(topic, 'num')
                 tid.text = str(qid)
@@ -78,7 +78,7 @@ class TrecTopics:
             root = etree.Element('parameters')
             trecformat = etree.SubElement(root, 'trecFormat')
             trecformat.text = "true"
-            for qid, text in sorted(self.topics.iteritems(), key=lambda x:x[0]):
+            for qid, text in sorted(iter(self.topics.items()), key=lambda x:x[0]):
                 topic = etree.SubElement(root, 'query')
                 tid = etree.SubElement(topic, 'id')
                 tid.text = str(qid)

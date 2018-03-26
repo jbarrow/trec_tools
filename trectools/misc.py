@@ -23,7 +23,7 @@ def check_fleish_kappa(tuple_of_judgements):
     n_ij = {}
     n = len(tuple_of_judgements)
     for judgement in tuple_of_judgements:
-        for doc, rel in zip(range(judgement.shape[0]), judgement):
+        for doc, rel in zip(list(range(judgement.shape[0])), judgement):
             items.add(doc)
             categories.add(rel)
             n_ij[(doc, rel)] = n_ij.get((doc, rel), 0) + 1
@@ -36,7 +36,7 @@ def check_fleish_kappa(tuple_of_judgements):
     for i in items:
         P_i[i] = (sum(n_ij.get((i,c), 0)**2 for c in categories)-n) / (n*(n-1.0))
 
-    P_bar = sum(P_i.itervalues()) / (1.0*N)
+    P_bar = sum(P_i.values()) / (1.0*N)
     P_e_bar = sum(p_j[c]**2 for c in categories)
 
     kappa = (P_bar - P_e_bar) / (1 - P_e_bar)
@@ -68,7 +68,7 @@ def make_pool_from_files(filenames, strategy="topX", topX=10, rbp_strategy="sum"
 
     runs = []
     for fname in filenames:
-	runs.append(TrecRun(fname))
+        runs.append(TrecRun(fname))
     return make_pool(runs, strategy, topX=topX, rbp_p=rbp_p, rbp_strategy=rbp_strategy, rrf_den=rrf_den)
 
 
@@ -100,7 +100,7 @@ def make_pool_rrf(list_of_runs, topX=500, rrf_den=60):
 
     for run in list_of_runs:
         df = run.run_data.copy()
-	# NOTE: Everything is made based on the rank col. It HAS TO start by '1'
+        # NOTE: Everything is made based on the rank col. It HAS TO start by '1'
         df["rrf_value"] = 1.0 / (rrf_den + df["rank"])
         # Concatenate all dfs into a single big_df
         big_df = pd.concat((big_df,df[["query","docid","rrf_value"]]))
@@ -136,7 +136,7 @@ def make_pool_rbp(list_of_runs, topX = 100, p=0.80, strategy="sum"):
 
     for run in list_of_runs:
         df = run.run_data.copy()
-	# NOTE: Everything is made based on the rank col. It HAS TO start by '1'
+        # NOTE: Everything is made based on the rank col. It HAS TO start by '1'
         df["rbp_value"] = (1.0-p) * (p) ** (df["rank"]-1)
         # Concatenate all dfs into a single big_df
         big_df = pd.concat((big_df,df[["query","docid","rbp_value"]]))
@@ -147,7 +147,7 @@ def make_pool_rbp(list_of_runs, topX = 100, p=0.80, strategy="sum"):
     elif strategy == "max":
         grouped_by_docid = big_df.groupby(["query","docid"])["rbp_value"].max().reset_index()
     else:
-        print "Strategy '%s' does not exist. Options are 'sum' and 'max'" % (strategy)
+        print("Strategy '%s' does not exist. Options are 'sum' and 'max'" % (strategy))
 
     # Sort documents by rbp value inside each qid group
     grouped_by_docid.sort_values(by=["query","rbp_value"], ascending=[True,False], inplace=True)
@@ -174,7 +174,7 @@ def make_pool_topX(list_of_runs, cutoff=10):
     for run in list_of_runs:
         topics_seen = topics_seen.union(run.topics())
         for t in topics_seen:
-            if t not in pool_documents.keys():
+            if t not in list(pool_documents.keys()):
                 pool_documents[t] = set([])
             pool_documents[t] = pool_documents[t].union(run.get_top_documents(t, n=cutoff))
 
@@ -223,27 +223,27 @@ def get_correlation(sorted1, sorted2, correlation="kendall"):
         return (2 * p - 1., -1)
 
     if len(sorted1) != len(sorted2):
-        print "ERROR: Arrays must have the same size. Given arrays have size (%d) and (%d)." % (len(sorted1), len(sorted2))
+        print("ERROR: Arrays must have the same size. Given arrays have size (%d) and (%d)." % (len(sorted1), len(sorted2)))
         return np.nan
 
     # Transform a list of names into a list of integers
     s1 = zip(*sorted1)[1]
     s2 = zip(*sorted2)[1]
-    m = dict(zip(s1, xrange(len(s2))))
+    m = dict(list(zip(s1, list(range(len(s2))))))
     new_rank = []
     for s in s2:
         new_rank.append(m[s])
 
     if correlation  == "kendall" or correlation == "kendalltau":
-        return sp.stats.kendalltau(xrange(len(s1)), new_rank)
+        return sp.stats.kendalltau(range(len(s1)), new_rank)
     elif correlation  == "pearson" or correlation == "spearmanr":
-        return sp.stats.pearsonr(xrange(len(s1)), new_rank)
+        return sp.stats.pearsonr(range(len(s1)), new_rank)
     elif correlation  == "spearman" or correlation == "spearmanr":
-        return sp.stats.spearmanr(xrange(len(s1)), new_rank)
+        return sp.stats.spearmanr(range(len(s1)), new_rank)
     elif correlation  == "tauap" or correlation == "kendalltauap" or correlation == "tau_ap":
-        return tau_ap(new_rank, range(len(s1)))
+        return tau_ap(new_rank, list(range(len(s1))))
     else:
-        print "Correlation %s is not implemented yet. Options are: kendall, pearson, spearman, tauap." % (correlation)
+        print("Correlation %s is not implemented yet. Options are: kendall, pearson, spearman, tauap." % (correlation))
         return None
 
 

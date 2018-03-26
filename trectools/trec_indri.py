@@ -17,12 +17,12 @@ class TrecIndri:
             f = float(p.stdout.text)
             return f
         except Exception as e:
-            print 'Query Clarity exception: %s' % (e)
+            print('Query Clarity exception: %s' % (e))
             return 0.0
 
     def queryclarity_topics(self, trec_topics, index):
         results = {}
-        for topid, top in trec_topics.topics.iteritems():
+        for topid, top in trec_topics.topics.items():
             r = self.queryclarity(top, index)
             results[topid] = r
         return results
@@ -59,14 +59,14 @@ class TrecIndri:
             cmd += (" 2> %s > %s "  % (os.devnull, outpath))
 
         if debug:
-            print "Running: %s " % (cmd)
+            print("Running: %s " % (cmd))
 
         r = sarge.run(cmd).returncode
 
         if r == 0:
             return TrecRun(os.path.join(result_dir, result_file))
         else:
-            print "ERROR with command %s" % (cmd)
+            print("ERROR with command %s" % (cmd))
             return None
 
 #tt = TrecIndri(bin_path="/data/palotti/terrier/terrier-4.0-trec-cds/bin/trec_terrier.sh")

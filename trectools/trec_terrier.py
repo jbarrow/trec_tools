@@ -30,14 +30,14 @@ class TrecTerrier:
             cmd += (" > %s 2> %s" % (os.devnull, os.devnull))
 
         if debug:
-            print "Running: %s " % (cmd)
+            print("Running: %s " % (cmd))
 
         r = sarge.run(cmd).returncode
 
         if r == 0:
             return TrecRun(os.path.join(result_dir, result_file))
         else:
-            print "ERROR with command %s" % (cmd)
+            print("ERROR with command %s" % (cmd))
             return None
 
 #tt = TrecTerrier(bin_path="/data/palotti/terrier/terrier-4.0-trec-cds/bin/trec_terrier.sh")

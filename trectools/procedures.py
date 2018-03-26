@@ -62,8 +62,8 @@ def evaluate_runs_ubire(trec_runs, trec_qrel, trec_qread, extension):
 def get_results(trec_ress, metric):
     results = []
     for res in trec_ress:
-        rs = res.get_results_for_metric(metric).values()
-	m = np.mean(rs)
+        rs = list(res.get_results_for_metric(metric).values())
+        m = np.mean(rs)
         ci = misc.confidence_interval(rs, confidence=0.95)
         n = res.get_runid()
 
@@ -77,7 +77,7 @@ def get_coverage(trec_runs, trec_qrels, topX=10):
         n = r.run_data.get_value(0,"system")
         covs = r.check_qrel_coverage(trec_qrels, topX=topX)
 
-	m = np.mean(covs)
+        m = np.mean(covs)
         ci = misc.confidence_interval(covs, confidence=0.95)
 
         results.append((n,m,ci))

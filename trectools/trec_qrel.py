@@ -35,7 +35,7 @@ class TrecQrel:
         if type(topics) is list:
             topics = set(topics)
         if type(topics) is not set:
-            print "ERROR: topics should be a set"
+            print("ERROR: topics should be a set")
             return None
         return df[df["query"].apply(lambda x: x in topics)]
 
@@ -48,7 +48,7 @@ class TrecQrel:
         """
 
         if another_qrel is None and labels is None and topics is None:
-            print "You should assign a set of labels, topics or at least input another qrel to be filtered."
+            print("You should assign a set of labels, topics or at least input another qrel to be filtered.")
             return
 
         dslice = None
@@ -69,7 +69,7 @@ class TrecQrel:
             del dslice["rel_x"]
 
         dslice[["query", "q0", "filename", "rel"]].to_csv(filename, sep=" ", header=False, index=False)
-        print "File %s writen." % (filename)
+        print("File %s writen." % (filename))
 
     def read_qrel(self, filename, qrels_header=["query","q0","filename","rel"]):
         self.filename = filename
@@ -96,10 +96,10 @@ class TrecQrel:
         a = merged["rel_x"]
         b = merged["rel_y"]
         s, p = ttest_ind(a,b)
-        print "This:  %.2f - %.2f" % (a.mean(), a.std())
-        print "Other: %.2f - %.2f" % (b.mean(), b.std())
-        print "significance: ", p
-        print "number of examples: ", a.shape[0]
+        print("This:  %.2f - %.2f" % (a.mean(), a.std()))
+        print("Other: %.2f - %.2f" % (b.mean(), b.std()))
+        print("significance: ", p)
+        print("number of examples: ", a.shape[0])
         return (a.mean(), a.std(), b.mean(), b.std(), p, a.shape[0])
 
     def describe(self, topics=None):
@@ -151,7 +151,7 @@ class TrecQrel:
         a_true_percentage = 1. * a.sum() / a.shape[0]
         b_true_percentage = 1. * b.sum() / b.shape[0]
         pe = (a_true_percentage * b_true_percentage) + ((1. - a_true_percentage) * (1. - b_true_percentage))
-        print "P0: %.2f, Pe = %.2f" % (p0, pe)
+        print("P0: %.2f, Pe = %.2f" % (p0, pe))
         return (p0 - pe) / (1.0 - pe)
 
     def check_overlap(self, another_qrel, min_rel_label=1):
@@ -173,9 +173,9 @@ class TrecQrel:
         if topics:
             r = self.__filter_topics(r, topics)
             if r is None:
-                print "ERROR in filtering topics"
+                print("ERROR in filtering topics")
                 return None
-            print "Resulting topics being used: ", r["query"].unique()
+            print("Resulting topics being used: ", r["query"].unique())
         return metrics.confusion_matrix(r["rel_x"], r["rel_y"], labels)
 
     def explore_agreement(self, another_qrel, topic):
@@ -192,13 +192,13 @@ class TrecQrel:
 
         if labels is not None:
             #TODO: add support for filtering some labels
-            print "SORRY LABEL SUPPORT NOT IMPLEMENTED YET"
+            print("SORRY LABEL SUPPORT NOT IMPLEMENTED YET")
             return None
 
         r = pd.merge(self.qrels_data, another_qrel.qrels_data, on=["query","q0","filename"]) # TODO: rename fields as done in trec_res
 
         if r.shape[0] == 0:
-            print "No registers in common"
+            print("No registers in common")
             return np.nan
 
         if topics:
@@ -206,7 +206,7 @@ class TrecQrel:
             for topic in topics:
                 rt = r[r["query"] == topic]
                 if rt.shape[0] == 0:
-                    print "ERROR: invalid topic:", topic
+                    print("ERROR: invalid topic:", topic)
                     agreements[topic] = np.nan
                     continue
 
@@ -231,8 +231,8 @@ class TrecQrel:
                 for j in range(i, vs.shape[0]):
                     m[fmap(vs[i][1],vs[i][2])][fmap(vs[j][1],vs[j][2])] += 1
 
-        print "Pairwise Agreement: %.2f " % (1.* (m[0][0] + m[1][1] + m[2][2]) / m.sum())
-        print "Total Disagement: %.2f " % (1.* (m[0][2] + m[2][0]) / m.sum())
+        print("Pairwise Agreement: %.2f " % (1.* (m[0][0] + m[1][1] + m[2][2]) / m.sum()))
+        print("Total Disagement: %.2f " % (1.* (m[0][2] + m[2][0]) / m.sum()))
         return m
 
     def merge_with(self, another_qrel, operation="or", keep_all=False, filename=None):
@@ -252,7 +252,7 @@ class TrecQrel:
         elif operation == "and":
             r["rel"] = r[["rel_x", "rel_y"]].apply(min, axis=1)
         else:
-            print "ERROR: No such operation %s. Options are 'or', 'and'." % (operation)
+            print("ERROR: No such operation %s. Options are 'or', 'and'." % (operation))
             return None
 
         if keep_all:
@@ -263,7 +263,7 @@ class TrecQrel:
 
         if filename:
             r[["query", "q0", "filename", "rel"]].to_csv(filename, sep=" ", header=False, index=False)
-            print "File %s writen." % (filename)
+            print("File %s writen." % (filename))
 
         return r[["query", "q0", "filename", "rel"]]
 
@@ -274,7 +274,7 @@ class TrecQrel:
         """
         returned = self.qrels_data.loc[(self.qrels_data["filename"] == document) & (self.qrels_data["query"] == topic)]
         if returned.shape[0] > 1:
-            print "ERROR: more than one value returned."
+            print("ERROR: more than one value returned.")
             return returned
         elif returned.shape[0] == 1:
             return returned["rel"].values[0]

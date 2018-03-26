@@ -35,7 +35,7 @@ class TrecRes:
 
     def read_res(self, filename, result_header=["metric", "query", "value"], double_values=True):
         if len(result_header) != 3:
-            print "ERROR: the header of your file should have size 3. Now it is", len(result_header)
+            print("ERROR: the header of your file should have size 3. Now it is", len(result_header))
 
         self.filename = filename
         self.data = pd.read_csv(filename, sep="\s+", names=result_header)
@@ -54,17 +54,17 @@ class TrecRes:
         merged = pd.concat((a,b), axis=1)
         if merged.isnull().any().sum() > 0:
             merged = merged.dropna()
-            print "The results do not share the same topics. Evaluating results on %d topics." % (merged.shape[0])
+            print("The results do not share the same topics. Evaluating results on %d topics." % (merged.shape[0]))
         return ttest_ind(merged[0], merged[1])
 
     def get_result(self, metric="P_10", query="all"):
         # TODO: Use get_value -- http://pandas.pydata.org/pandas-docs/stable/generated/pandas.DataFrame.get_value.html
         if metric not in self.data["metric"].unique():
-            print "Metric %s was not found" % (metric)
+            print("Metric %s was not found" % (metric))
             return None
         v = self.data[(self.data["metric"] == metric) & (self.data["query"] == query)]["value"]
         if v.shape[0] == 0:
-            print "Could not find any result using metric %s and query %s" % (metric, query)
+            print("Could not find any result using metric %s and query %s" % (metric, query))
             return None
         return v.values[0]
 
@@ -77,7 +77,7 @@ class TrecRes:
             data_slice = data_slice[data_slice["query"] != "all"]
 
         r = data_slice.to_dict(orient='list')
-        return dict(zip(r["query"], r["value"]))
+        return dict(list(zip(r["query"], r["value"])))
 
     def printresults(self, outputfilename, outputformat="csv", perquery=False):
         """
@@ -86,6 +86,6 @@ class TrecRes:
         if outputformat == 'csv':
             self.data.pivot("query", "metric", "value").to_csv(outputfilename)
         else:
-            print "TODO: outputformat %s is not yet available" % (outputformat)
+            print("TODO: outputformat %s is not yet available" % (outputformat))
 
 

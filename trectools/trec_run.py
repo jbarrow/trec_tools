@@ -33,7 +33,7 @@ class TrecRun:
     def print_subset(self, filename, topics):
         dslice = self.run_data[self.run_data["query"].apply(lambda x: x in set(topics))]
         dslice.sort_values(by=["query","score"], ascending=[True,False]).to_csv(filename, sep=" ", header=False, index=False)
-        print "File %s writen." % (filename)
+        print("File %s writen." % (filename))
 
     def get_full_filename_path(self):
         return os.path.abspath(os.path.expanduser(self.filename))
@@ -56,7 +56,7 @@ class TrecRun:
 
     def evaluate_external_script(self, cmd, debug=False):
         if debug:
-            print "Running: %s " % (cmd)
+            print("Running: %s " % (cmd))
         # TODO: if this command returns an error, I need to deal with it somehow
         sarge.run(cmd).returncode
 
@@ -83,8 +83,8 @@ class TrecRun:
             It is necessary to have ubire.jar set on your classpath to run this function.
         """
         if not os.path.isfile(os.path.join(os.getcwd(), "ubire.jar")):
-            print "File ubire.jar was not found in the current directory."
-            print "Please move it here (%s) and run this procedure again." % (os.getcwd())
+            print("File ubire.jar was not found in the current directory.")
+            print("Please move it here (%s) and run this procedure again." % (os.getcwd()))
             return None
 
         if printfile:
@@ -157,9 +157,9 @@ class TrecRun:
             covs.append( len(docsA.intersection(docsB)) )
 
         if len(covs) == 0:
-            print "ERROR: No topics in common."
+            print("ERROR: No topics in common.")
             return 0.0
 
         if debug:
-            print "Evaluated coverage on %d topics: %.3f " % (len(common_topics), np.mean(covs))
+            print("Evaluated coverage on %d topics: %.3f " % (len(common_topics), np.mean(covs)))
         return np.mean(covs)
