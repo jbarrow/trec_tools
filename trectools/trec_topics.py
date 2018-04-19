@@ -1,21 +1,20 @@
 from trectools.misc import remove_punctuation
-from lxml import etree
-import codecs
 from bs4 import BeautifulSoup
+from lxml import etree
+
 import os
 
-class TrecTopics:
-
+class TrecTopics(object):
     def __init__(self, topics={}):
         self.set_topics(topics)
 
     @classmethod
-    def read_topics_from_file(cls, filename, topic_tag='topic', numberid_tag='number',
-       number_attr=True, querytext_tag="query", encoding='ISO-8859-1', debug=False):
+    def from_file(cls, filename, topic_tag='topic', numberid_tag='number',
+        number_attr=True, querytext_tag='query', encoding='ISO-8859-1', debug=False):
         # TODO: throw an exception for errors when reading the topics.
         trec_topics = cls()
-        soup = BeautifulSoup(codecs.open(filename, "r", encoding=encoding), "lxml")
-
+        soup = BeautifulSoup(open(filename, 'r', encoding=encoding), 'lxml')
+        
         for topic in soup.findAll(topic_tag):
             if number_attr:
                 topic_id = topic.get(numberid_tag).strip()
@@ -24,7 +23,7 @@ class TrecTopics:
 
             query = topic.findNext(querytext_tag).getText().strip()
             if debug:
-                print("Number: %s Query: %s" % (topic_id, query))
+                print(f'Number: {topic_id} Query: {query}')
             trec_topics.set_topic(topic_id, query)
         return trec_topics
     

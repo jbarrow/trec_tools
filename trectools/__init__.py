@@ -1,5 +1,6 @@
 #from .misc import *
 # from .fusion import *
+from .trec_docs import TrecDocs
 from .trec_res import TrecRes
 from .trec_qrel import TrecQrel
 from .trec_run import TrecRun
@@ -10,6 +11,6 @@ from .trec_indri import TrecIndri
 #from .trec_eval import TrecEval
 
 
-__all__ = ["TrecRes", "TrecQrel", "TrecRun", "TrecPool", "TrecTopics", "TrecTerrier", "TrecIndri"]
+__all__ = ["TrecDocs", "TrecRes", "TrecQrel", "TrecRun", "TrecPool", "TrecTopics", "TrecTerrier", "TrecIndri"]
 # "TrecEval"
 
